@@ -1,6 +1,8 @@
 package cmsc436.com.callyourmom;
 
 import android.content.Context;
+import android.support.transition.TransitionManager;
+import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
@@ -8,11 +10,8 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ExpandableListView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
-import android.widget.SimpleExpandableListAdapter;
-import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -33,7 +32,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         Context context = parent.getContext();
         LayoutInflater inflater = LayoutInflater.from(context);
 
-        View itemLayout = inflater.inflate(R.layout.item_layout, parent, false);
+        View itemLayout = inflater.inflate(R.layout.group_item, parent, false);
 
         ViewHolder viewHolder = new ViewHolder(itemLayout);
 
@@ -87,21 +86,23 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         @Override
         public void onClick(View view) {
             CardView cardView = (CardView) view.findViewById(R.id.card_view);
+
             // We clicked on the card
             if (list.getVisibility() == View.GONE || list.getVisibility() == View.INVISIBLE) {
+                TransitionManager.beginDelayedTransition(cardView);
                 list.setVisibility(View.VISIBLE);
                 ViewGroup.LayoutParams params = cardView.getLayoutParams();
                 params.height +=
                         list.getAdapter().getCount() * (int)
                                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, view.getContext().getResources().getDisplayMetrics());
                 cardView.setLayoutParams(params);
-
             }
             else {
                 cardView.getLayoutParams().height =
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, view.getContext().getResources().getDisplayMetrics());
                 Log.v("Collapse", cardView.getLayoutParams().height + " Should be back at 150");
                 list.setVisibility(View.GONE);
+                TransitionManager.beginDelayedTransition(cardView);
             }
         }
     }
