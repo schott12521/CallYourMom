@@ -102,7 +102,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
                         (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 150, view.getContext().getResources().getDisplayMetrics());
                 Log.v("Collapse", cardView.getLayoutParams().height + " Should be back at 150");
                 list.setVisibility(View.GONE);
-                TransitionManager.beginDelayedTransition(cardView);
+//                TransitionManager.beginDelayedTransition(cardView);
             }
         }
     }
