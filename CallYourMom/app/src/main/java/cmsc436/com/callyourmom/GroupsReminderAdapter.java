@@ -10,8 +10,13 @@ import android.util.TypedValue;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,7 +46,8 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
 
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
-        List<CallReminder> reminder = mGroups.get(position).getRemindersInGroup();
+        final GroupsOfReminders group = mGroups.get(position);
+        final List<CallReminder> reminder = group.getRemindersInGroup();
         List<HashMap<String, String>> temp = new ArrayList<>();
 
         int i = 0;
@@ -60,7 +66,18 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         int[] to = {R.id.contact_name, R.id.contact_number};
         list.setAdapter(new SimpleAdapter(getContext(), temp, R.layout.contact_item, from, to));
 
+        holder.numContacts.setText(reminder.size() + " contact reminders");
+        holder.frequency.setText("Call every " + group.getFrequencyInDays() + " days");
+
         list.setVisibility(View.INVISIBLE);
+
+        // This is the on item click listener for contacts in the group
+        holder.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+                Toast.makeText(getContext(), reminder.get(i).getContactName(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
     @Override
@@ -74,11 +91,15 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
 
     public static class ViewHolder extends RecyclerView.ViewHolder implements View.OnClickListener {
         public ListView list;
+        public TextView numContacts;
+        public TextView frequency;
 
         public ViewHolder(View itemView) {
             super(itemView);
 
             list = (ListView) itemView.findViewById(R.id.list);
+            numContacts = (TextView) itemView.findViewById(R.id.numContacts);
+            frequency = (TextView) itemView.findViewById(R.id.groupFrequency);
 
             itemView.setOnClickListener(this);
         }

@@ -67,7 +67,9 @@ public class MainActivity extends AppCompatActivity {
         }
 
         for (int i = 0; i < rand.nextInt(5) + 3; i++) {
-            groups.add(new GroupsOfReminders(reminders));
+            GroupsOfReminders singleGroup = new GroupsOfReminders(reminders);
+            singleGroup.setFrequencyInDays(rand.nextInt(21) + 1);
+            groups.add(singleGroup);
         }
 
         GroupsReminderAdapter adapter = new GroupsReminderAdapter(this, groups);
@@ -115,7 +117,7 @@ public class MainActivity extends AppCompatActivity {
 
                     // permission denied, boo! Disable the
                     // functionality that depends on this permission.
-                    Toast.makeText(MainActivity.this, "Permission denied to read your Call Log", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(MainActivity.this, "Permission denied to read your Call Log, we need this :(", Toast.LENGTH_SHORT).show();
                 }
                 return;
             }

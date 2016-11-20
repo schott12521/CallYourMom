@@ -14,14 +14,36 @@
         android:layout_height="match_parent">
 
         <TextView
-            android:id="@+id/test"
+            android:id="@+id/numContacts"
             android:layout_width="wrap_content"
             android:layout_height="150dp"
             android:textSize="10dp"
-            android:text="HELLO"/>
+            android:text=" contacts"
+            android:paddingLeft="4dp"
+            android:paddingTop="4dp"/>
+
+        <RelativeLayout android:layout_width="100dp"
+              android:layout_height="100dp"
+              android:background="@drawable/circle"
+              android:layout_centerHorizontal="true"
+              android:layout_centerInParent="false"
+              android:layout_centerVertical="false"
+              android:layout_marginTop="25dp">
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/groupFrequency"
+                android:maxWidth="90dp"
+                android:gravity="center"/>
+
+        </RelativeLayout>
 
         <ListView
-            android:layout_below="@id/test"
+            android:layout_below="@id/numContacts"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:nestedScrollingEnabled="false"

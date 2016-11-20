@@ -4,6 +4,15 @@ import java.util.List;
 
 public class GroupsOfReminders {
     List<CallReminder> remindersInGroup;
+    int frequencyInDays;
+
+    public int getFrequencyInDays() {
+        return frequencyInDays;
+    }
+
+    public void setFrequencyInDays(int frequencyInDays) {
+        this.frequencyInDays = frequencyInDays;
+    }
 
     public GroupsOfReminders(List<CallReminder> remindersInGroup) {
         this.remindersInGroup = remindersInGroup;
