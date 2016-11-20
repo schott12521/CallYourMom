@@ -26,7 +26,7 @@ import android.database.Cursor;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ContactActivity extends Activity{
+public class ContactActivity extends AppCompatActivity {
 
     private static TextView contactName;
 
@@ -35,6 +35,10 @@ public class ContactActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
 
         contactName = (TextView) findViewById(R.id.contact_name);
         NumberPicker np = (NumberPicker) findViewById(R.id.numberPicker);
@@ -72,5 +76,14 @@ public class ContactActivity extends Activity{
         }
     }
 
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
 
 }
