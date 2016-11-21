@@ -22,6 +22,9 @@ import android.widget.*;
 import android.view.View.*;
 import android.net.*;
 import android.database.Cursor;
+import java.io.File;
+
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.Random;
@@ -29,17 +32,24 @@ import java.util.Random;
 public class ContactActivity extends Activity{
 
     private static TextView contactName;
-
+    private NumberPicker np;
+    private boolean contactPicked;
     static final int PICK_CONTACT=1;
+
+    private File reminders;
     @Override
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
-
+        contactPicked = false;
         contactName = (TextView) findViewById(R.id.contact_name);
-        NumberPicker np = (NumberPicker) findViewById(R.id.numberPicker);
+        np = (NumberPicker) findViewById(R.id.numberPicker);
         np.setMinValue(1);
         np.setMaxValue(100);
+
+        reminders = new File("reminders.txt");
+
+
         final Button mSelectContact = (Button) findViewById(R.id.chooseContact);
         mSelectContact.setOnClickListener(new OnClickListener(){
             @Override
@@ -49,11 +59,17 @@ public class ContactActivity extends Activity{
             }
         });
 
-        mSelectContact.setOnClickListener(new OnClickListener(){
+        final Button mSubmit = (Button) findViewById(R.id.submit);
+        mSubmit.setOnClickListener(new OnClickListener(){
             @Override
             public void onClick(View v){
-                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(intent, PICK_CONTACT);
+                if (contactPicked) {
+                    CallReminder newReminder = new CallReminder(contactName.getText().toString(), "3");
+                    newReminder.setNumDaysForRemind(np.getValue());
+                    finish();
+                } else {
+                    Snackbar.make(v, "No Contact Selected", Snackbar.LENGTH_LONG).setAction("Action", null).show();
+                }
             }
         });
 
@@ -68,8 +84,13 @@ public class ContactActivity extends Activity{
                 String id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 contactName.setText(name);
+                contactPicked = true;
             }
         }
+    }
+
+    protected boolean updateReminder(String contactName){
+        return true;
     }
 
 
