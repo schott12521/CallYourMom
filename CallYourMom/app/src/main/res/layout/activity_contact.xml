@@ -1,48 +1,74 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="vertical" android:layout_width="match_parent"
-    android:layout_height="match_parent">
+<android.support.design.widget.CoordinatorLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true"
+    tools:context="cmsc436.com.callyourmom.MainActivity">
 
-    <Button
-        android:id="@+id/chooseContact"
-        android:layout_width="wrap_content"
+    <android.support.design.widget.AppBarLayout
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:text="Choose Contact"
-        android:layout_marginTop="40dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignEnd="@+id/submit" />
+        android:theme="@style/AppTheme.AppBarOverlay">
 
-    <Button
-        android:id="@+id/submit"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text= "Create Reminder"
-        android:layout_marginBottom="65dp"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true" />
+        <android.support.v7.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="?attr/colorPrimary"
+            app:popupTheme="@style/AppTheme.PopupOverlay"/>
 
-    <NumberPicker
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:id="@+id/numberPicker"
-        android:layout_centerVertical="true"
-        android:layout_alignStart="@+id/contact_name"/>
+    </android.support.design.widget.AppBarLayout>
 
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="  days between reminder"
-        android:layout_centerVertical="true"
-        android:layout_toEndOf="@+id/numberPicker"
-        android:id="@+id/textView" />
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:orientation="vertical">
 
-    <TextView
-        android:id="@id/contact_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text = "[NO CONTACT SELECTED]"
-        android:layout_marginTop="35dp"
-        android:layout_below="@+id/chooseContact"
-        android:layout_centerHorizontal="true" />
+        <Button
+            android:id="@+id/chooseContact"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignEnd="@+id/submit"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="76dp"
+            android:text="Choose Contact"/>
 
-</RelativeLayout>
+        <Button
+            android:id="@+id/submit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="65dp"
+            android:text="Create Reminder"/>
+
+        <NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignStart="@+id/contact_name"
+            android:layout_centerVertical="true"/>
+
+        <TextView
+            android:id="@+id/textView"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toEndOf="@+id/numberPicker"
+            android:text="  days between reminder"/>
+
+        <TextView
+            android:id="@id/contact_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/chooseContact"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="35dp"
+            android:text="[NO CONTACT SELECTED]"/>
+
+    </RelativeLayout>
+
+</android.support.design.widget.CoordinatorLayout>

@@ -29,7 +29,7 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 import java.util.Random;
 
-public class ContactActivity extends Activity{
+public class ContactActivity extends AppCompatActivity {
 
     private static TextView contactName;
     private NumberPicker np;
@@ -41,7 +41,15 @@ public class ContactActivity extends Activity{
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
+<<<<<<< HEAD
         contactPicked = false;
+=======
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        getSupportActionBar().setDisplayShowHomeEnabled(true);
+
+>>>>>>> origin/master
         contactName = (TextView) findViewById(R.id.contact_name);
         np = (NumberPicker) findViewById(R.id.numberPicker);
         np.setMinValue(1);
@@ -89,9 +97,21 @@ public class ContactActivity extends Activity{
         }
     }
 
+<<<<<<< HEAD
     protected boolean updateReminder(String contactName){
         return true;
     }
 
+=======
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // handle arrow click here
+        if (item.getItemId() == android.R.id.home) {
+            finish(); // close this activity and return to preview activity (if there is any)
+        }
+
+        return super.onOptionsItemSelected(item);
+    }
+>>>>>>> origin/master
 
 }
