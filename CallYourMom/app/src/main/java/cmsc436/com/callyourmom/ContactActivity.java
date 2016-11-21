@@ -41,15 +41,14 @@ public class ContactActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
-<<<<<<< HEAD
+
         contactPicked = false;
-=======
+
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         getSupportActionBar().setDisplayShowHomeEnabled(true);
 
->>>>>>> origin/master
         contactName = (TextView) findViewById(R.id.contact_name);
         np = (NumberPicker) findViewById(R.id.numberPicker);
         np.setMinValue(1);
@@ -97,12 +96,12 @@ public class ContactActivity extends AppCompatActivity {
         }
     }
 
-<<<<<<< HEAD
+
     protected boolean updateReminder(String contactName){
         return true;
     }
 
-=======
+
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         // handle arrow click here
@@ -112,6 +111,6 @@ public class ContactActivity extends AppCompatActivity {
 
         return super.onOptionsItemSelected(item);
     }
->>>>>>> origin/master
+
 
 }
