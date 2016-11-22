@@ -1,6 +1,7 @@
 package cmsc436.com.callyourmom;
 import android.Manifest;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -24,8 +25,11 @@ import android.net.*;
 import android.database.Cursor;
 import java.io.File;
 
+import org.json.JSONException;
 import org.json.JSONObject;
+import org.json.JSONArray;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -35,9 +39,13 @@ public class ContactActivity extends AppCompatActivity {
     private NumberPicker np;
     private boolean contactPicked;
     static final int PICK_CONTACT=1;
+    private static final String reminders = "remindersFile";
 
-    private File reminders;
-    @Override
+
+    private String dataString;
+    private SharedPreferences data;
+    private SharedPreferences.Editor editor;
+
     protected void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
@@ -52,10 +60,10 @@ public class ContactActivity extends AppCompatActivity {
         contactName = (TextView) findViewById(R.id.contact_name);
         np = (NumberPicker) findViewById(R.id.numberPicker);
         np.setMinValue(1);
-        np.setMaxValue(100);
+        np.setMaxValue(365);
 
-        reminders = new File("reminders.txt");
-
+        data = getSharedPreferences(reminders, 0);
+        dataString = data.toString();
 
         final Button mSelectContact = (Button) findViewById(R.id.chooseContact);
         mSelectContact.setOnClickListener(new OnClickListener(){
@@ -73,6 +81,7 @@ public class ContactActivity extends AppCompatActivity {
                 if (contactPicked) {
                     CallReminder newReminder = new CallReminder(contactName.getText().toString(), "3");
                     newReminder.setNumDaysForRemind(np.getValue());
+
                     finish();
                 } else {
                     Snackbar.make(v, "No Contact Selected", Snackbar.LENGTH_LONG).setAction("Action", null).show();
@@ -97,8 +106,23 @@ public class ContactActivity extends AppCompatActivity {
     }
 
 
-    protected boolean updateReminder(String contactName){
-        return true;
+    protected boolean updateReminder(String contactName) throws JSONException{
+        //Key: numDays    (JSONObject
+        //Val: contact
+
+        //For contact       JSONArray
+        //      Name
+        //      Phone number
+
+        JSONObject json;
+
+        if (dataString != null){
+            json = new JSONObject(dataString);
+            return true;
+        } else {
+            return false;
+        }
+
     }
 
 
