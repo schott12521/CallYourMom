@@ -69,6 +69,14 @@
             android:layout_marginTop="35dp"
             android:text="[NO CONTACT SELECTED]"/>
 
+        <TextView
+            android:id="@id/contact_number"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="[NO CONTACT SELECTED]"
+            android:layout_below="@id/contact_name"
+            android:layout_centerHorizontal="true"/>
+
     </RelativeLayout>
 
 </android.support.design.widget.CoordinatorLayout>
