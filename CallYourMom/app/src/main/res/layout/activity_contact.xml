@@ -61,7 +61,7 @@
             android:text="  days between reminder"/>
 
         <TextView
-            android:id="@id/contact_name"
+            android:id="@+id/contact_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/chooseContact"
@@ -70,7 +70,7 @@
             android:text="[NO CONTACT SELECTED]"/>
 
         <TextView
-            android:id="@id/contact_number"
+            android:id="@+id/contact_number"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="[NO CONTACT SELECTED]"

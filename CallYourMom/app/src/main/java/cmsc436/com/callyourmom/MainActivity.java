@@ -23,6 +23,8 @@ import java.util.Random;
 
 public class MainActivity extends AppCompatActivity {
 
+    public static final int ADD_CONTACT_REQUEST = 436;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -52,7 +54,7 @@ public class MainActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
                 Intent contactIntent = new Intent(MainActivity.this, ContactActivity.class);
-                startActivity(contactIntent);
+                startActivityForResult(contactIntent, ADD_CONTACT_REQUEST);
             }
         });
 
@@ -124,6 +126,16 @@ public class MainActivity extends AppCompatActivity {
 
             // other 'case' lines to check for other
             // permissions this app might request
+        }
+    }
+
+    @Override
+    protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (resultCode == RESULT_OK && requestCode == ADD_CONTACT_REQUEST) {
+            // TODO update recyclerview, add alarm reminder @vito chen
+            Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
         }
     }
 }

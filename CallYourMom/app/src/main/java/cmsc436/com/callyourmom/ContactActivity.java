@@ -92,7 +92,7 @@ public class ContactActivity extends AppCompatActivity {
                         e.printStackTrace();
                     }
                     editor.putString(reminders, dataString);
-                    finish();
+                    finishActivity(MainActivity.ADD_CONTACT_REQUEST);
                 } else {
                     Snackbar.make(v, "No Contact Selected", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
