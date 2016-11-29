@@ -1,11 +1,14 @@
 package cmsc436.com.callyourmom;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.app.Service;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.ContentObserver;
 import android.database.Cursor;
+import android.icu.util.Calendar;
 import android.net.Uri;
 import android.os.Handler;
 import android.os.IBinder;
@@ -63,7 +66,26 @@ public class CallLogService extends Service {
             c.moveToLast();
             String num = c.getString(c.getColumnIndex(CallLog.Calls.NUMBER));// for  number
             String name = c.getString(c.getColumnIndex(CallLog.Calls.CACHED_NAME));// for name
-            String duration = c.getString(c.getColumnIndex(CallLog.Calls.DURATION));// for duration
+
+
+            // See if there is already a pending alarm intent for this reminder
+
+            Intent myIntent = new Intent("cmsc436.com.callyourmom.call" + name);
+
+            boolean isWorking = (PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_NO_CREATE) != null);
+            if (isWorking) {
+                Log.d("alarm", "is working");
+                // We already have this alarm, push it back!
+            } else {
+                Log.d("alarm", "is not working");
+                // We don't have this alarm do no work
+            }
+
+            if(!isWorking) {
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent,    PendingIntent.FLAG_UPDATE_CURRENT);
+                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent);
+            }
 
             Toast.makeText(getApplicationContext(), "Called: " + num, Toast.LENGTH_SHORT).show();
         }

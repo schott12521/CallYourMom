@@ -1,6 +1,8 @@
 package cmsc436.com.callyourmom;
 
 import android.Manifest;
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
@@ -137,6 +139,7 @@ public class MainActivity extends AppCompatActivity {
             // TODO update recyclerview, add alarm reminder @vito chen
             // the alarm has to create a pending intent that will show a notification telling the user
             // to call the contact
+            // Intent myIntent = new Intent("cmsc436.com.callyourmom.call" + name); <- this HAS to be the name of the alarm
             Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
         }
     }
