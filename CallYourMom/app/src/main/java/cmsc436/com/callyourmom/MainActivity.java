@@ -135,6 +135,8 @@ public class MainActivity extends AppCompatActivity {
 
         if (resultCode == RESULT_OK && requestCode == ADD_CONTACT_REQUEST) {
             // TODO update recyclerview, add alarm reminder @vito chen
+            // the alarm has to create a pending intent that will show a notification telling the user
+            // to call the contact
             Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
         }
     }
