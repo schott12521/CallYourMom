@@ -67,14 +67,15 @@ public class CallLogService extends Service {
             String num = c.getString(c.getColumnIndex(CallLog.Calls.NUMBER));// for  number
             String name = c.getString(c.getColumnIndex(CallLog.Calls.CACHED_NAME));// for name
 
-
             // See if there is already a pending alarm intent for this reminder
 
             Intent myIntent = new Intent("cmsc436.com.callyourmom.call" + name);
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
             boolean isWorking = (PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_NO_CREATE) != null);
             if (isWorking) {
-                Log.d("alarm", "is working");
+                Log.d("alarm", "already exists");
+
                 // We already have this alarm, push it back!
             } else {
                 Log.d("alarm", "is not working");
@@ -82,8 +83,9 @@ public class CallLogService extends Service {
             }
 
             if(!isWorking) {
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent,    PendingIntent.FLAG_UPDATE_CURRENT);
-                AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                // System.currentTimeMillis will have to change to be equal to when the intent should fire
+                // which is the reminder.numDaysForReminder * 24 * 60 * 60 sec
                 alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent);
             }
 

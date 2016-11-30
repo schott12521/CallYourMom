@@ -1,48 +1,34 @@
 package cmsc436.com.callyourmom;
 
-import android.Manifest;
+import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.Contacts;
 import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.util.Log;
-import android.view.View;
-import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.Toast;
-import android.app.Activity;
-import android.widget.*;
-import android.view.View.*;
-import android.net.*;
-import android.database.Cursor;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.widget.Button;
+import android.widget.NumberPicker;
+import android.widget.TextView;
 
-import java.io.File;
-
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.json.JSONArray;
-
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Random;
 
 public class ContactActivity extends AppCompatActivity {
 
-    private static TextView contactName, contactNumber;
+    private TextView contactName, contactNumber;
     private NumberPicker np;
     private boolean contactPicked;
     static final int PICK_CONTACT = 1;
-    private static final String reminders = "remindersFile";
+    public static final String reminders = "remindersFile";
 
     private String ayy = ContactActivity.class.getSimpleName();
     private String dataString;
@@ -66,10 +52,6 @@ public class ContactActivity extends AppCompatActivity {
         np.setMinValue(1);
         np.setMaxValue(365);
 
-        data = getSharedPreferences("data", 0);
-        editor = data.edit();
-        dataString = data.getString(reminders, "0");
-
         final Button mSelectContact = (Button) findViewById(R.id.chooseContact);
         mSelectContact.setOnClickListener(new OnClickListener() {
             @Override
@@ -84,15 +66,15 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (contactPicked) {
-                    CallReminder newReminder = new CallReminder(contactName.getText().toString(), "3");
+                    CallReminder newReminder = new CallReminder(contactName.getText().toString(), "4");
                     newReminder.setNumDaysForRemind(np.getValue());
                     try {
-                        updateReminder(contactName.getText().toString(), "410-999-5555", 3);
+                        updateReminder(contactName.getText().toString(), "410-999-5555", 4);
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    editor.putString(reminders, dataString);
-                    finishActivity(MainActivity.ADD_CONTACT_REQUEST);
+                    setResult(RESULT_OK);
+                    finish();
                 } else {
                     Snackbar.make(v, "No Contact Selected", Snackbar.LENGTH_LONG).setAction("Action", null).show();
                 }
@@ -111,7 +93,7 @@ public class ContactActivity extends AppCompatActivity {
                 String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 contactName.setText(name + " " + id);
                 contactPicked = true;
-                String number = c.getString(c.getColumnIndexOrThrow(Contacts.People.NUMBER));
+//                String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
             }
         }
@@ -126,16 +108,22 @@ public class ContactActivity extends AppCompatActivity {
         //      Name
         //      Phone number
 
+        data = getSharedPreferences("data", Context.MODE_PRIVATE);
+        editor = data.edit();
+        dataString = data.getString(reminders, "");
+
         JSONObject json;
         JSONArray group;
-        if (dataString != null)
+        if (dataString != null && !dataString.equals("") && !dataString.isEmpty())
             json = new JSONObject(dataString);
         else
             json = new JSONObject();
 
-        if (json.has(Integer.toString(numDays)))
+        if (!json.has(Integer.toString(numDays)))
             json.put(Integer.toString(numDays), new JSONArray());
+
         group = json.getJSONArray(Integer.toString(numDays));
+
         JSONObject contact = new JSONObject();
         contact.put("name", contactName);
         contact.put("number", phoneNumber);
@@ -144,6 +132,9 @@ public class ContactActivity extends AppCompatActivity {
         dataString = json.toString();
 
         Log.e(ayy, "TESTING ----" + dataString);
+
+        editor.putString(reminders, dataString);
+        editor.commit();
 
     }
 

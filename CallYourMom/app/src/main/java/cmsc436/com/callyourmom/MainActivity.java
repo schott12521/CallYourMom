@@ -3,7 +3,9 @@ package cmsc436.com.callyourmom;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
@@ -14,18 +16,31 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.Toast;
 
+import org.json.JSONArray;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import java.util.Random;
+
+import static cmsc436.com.callyourmom.ContactActivity.reminders;
 
 public class MainActivity extends AppCompatActivity {
 
     public static final int ADD_CONTACT_REQUEST = 436;
+
+    private SharedPreferences data;
+    private ArrayList<GroupsOfReminders> groups;
+    private GroupsReminderAdapter adapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,6 +50,41 @@ public class MainActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
 
         // Get the permission request!
+        checkPermissions();
+
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Intent contactIntent = new Intent(MainActivity.this, ContactActivity.class);
+                startActivityForResult(contactIntent, ADD_CONTACT_REQUEST);
+            }
+        });
+
+        RecyclerView rvReminders = (RecyclerView) findViewById(R.id.reminders);
+
+//        ArrayList<GroupsOfReminders> groups = new ArrayList<>();
+//        ArrayList<CallReminder> reminders = new ArrayList<>();
+//        Random rand = new Random();
+//
+//        for (int i = 0; i < rand.nextInt(5) + 1; i++) {
+//            reminders.add(new CallReminder("hello " + i, i + ""));
+//        }
+//
+//        for (int i = 0; i < rand.nextInt(5) + 3; i++) {
+//            GroupsOfReminders singleGroup = new GroupsOfReminders(reminders);
+//            singleGroup.setFrequencyInDays(rand.nextInt(21) + 1);
+//            groups.add(singleGroup);
+//        }
+
+        groups = populateGroupsFromSharedPreferences();
+        Log.e("Groups size", groups.size() + "");
+        adapter = new GroupsReminderAdapter(this, groups);
+        rvReminders.setAdapter(adapter);
+        rvReminders.setLayoutManager(new LinearLayoutManager(this));
+    }
+
+    private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_CALL_LOG)
                 != PackageManager.PERMISSION_GRANTED) {
@@ -50,35 +100,6 @@ public class MainActivity extends AppCompatActivity {
             Intent callLogIntent = new Intent(getApplicationContext(), CallLogService.class);
             startService(callLogIntent);
         }
-
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Intent contactIntent = new Intent(MainActivity.this, ContactActivity.class);
-                startActivityForResult(contactIntent, ADD_CONTACT_REQUEST);
-            }
-        });
-
-        RecyclerView rvReminders = (RecyclerView) findViewById(R.id.reminders);
-
-        ArrayList<GroupsOfReminders> groups = new ArrayList<>();
-        ArrayList<CallReminder> reminders = new ArrayList<>();
-        Random rand = new Random();
-
-        for (int i = 0; i < rand.nextInt(5) + 1; i++) {
-            reminders.add(new CallReminder("hello " + i, i + ""));
-        }
-
-        for (int i = 0; i < rand.nextInt(5) + 3; i++) {
-            GroupsOfReminders singleGroup = new GroupsOfReminders(reminders);
-            singleGroup.setFrequencyInDays(rand.nextInt(21) + 1);
-            groups.add(singleGroup);
-        }
-
-        GroupsReminderAdapter adapter = new GroupsReminderAdapter(this, groups);
-        rvReminders.setAdapter(adapter);
-        rvReminders.setLayoutManager(new LinearLayoutManager(this));
     }
 
     @Override
@@ -141,6 +162,44 @@ public class MainActivity extends AppCompatActivity {
             // to call the contact
             // Intent myIntent = new Intent("cmsc436.com.callyourmom.call" + name); <- this HAS to be the name of the alarm
             Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
+            groups = populateGroupsFromSharedPreferences();
+            adapter.notifyDataSetChanged();
         }
+    }
+
+    public ArrayList<GroupsOfReminders> populateGroupsFromSharedPreferences() {
+        data = getSharedPreferences("data", Context.MODE_PRIVATE);
+        String dataString = data.getString(ContactActivity.reminders, "");
+
+        ArrayList<GroupsOfReminders> groupsToReturn = new ArrayList<>();
+
+        if (!dataString.equals("") && !dataString.isEmpty()) {
+            try {
+                JSONObject jsonGroups = new JSONObject(dataString);
+                Iterator<String> groupsIterator = jsonGroups.keys();
+
+                while (groupsIterator.hasNext()) {
+                    String groupIdentifer = groupsIterator.next();
+                    JSONArray contactsInGroup = jsonGroups.getJSONArray(groupIdentifer);
+
+                    List<CallReminder> group = new ArrayList<>();
+                    for (int i = 0; i < contactsInGroup.length(); i++) {
+                        JSONObject obj = contactsInGroup.getJSONObject(i);
+                        CallReminder reminder = new CallReminder(obj.getString("name"), obj.getString("number"));
+                        group.add(reminder);
+                    }
+                    Log.e("" + groupIdentifer, contactsInGroup.toString());
+
+                    GroupsOfReminders singleGroup = new GroupsOfReminders(group);
+                    singleGroup.setFrequencyInDays(Integer.parseInt(groupIdentifer));
+                    groupsToReturn.add(singleGroup);
+                }
+
+
+            } catch (Exception e) {}
+
+        }
+
+        return groupsToReturn;
     }
 }
