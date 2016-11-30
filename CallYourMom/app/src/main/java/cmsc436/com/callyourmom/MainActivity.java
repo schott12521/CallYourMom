@@ -41,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences data;
     private ArrayList<GroupsOfReminders> groups;
     private GroupsReminderAdapter adapter;
+    private RecyclerView rvReminders;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -61,7 +62,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-        RecyclerView rvReminders = (RecyclerView) findViewById(R.id.reminders);
+        rvReminders = (RecyclerView) findViewById(R.id.reminders);
 
 //        ArrayList<GroupsOfReminders> groups = new ArrayList<>();
 //        ArrayList<CallReminder> reminders = new ArrayList<>();
@@ -163,7 +164,9 @@ public class MainActivity extends AppCompatActivity {
             // Intent myIntent = new Intent("cmsc436.com.callyourmom.call" + name); <- this HAS to be the name of the alarm
             Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
             groups = populateGroupsFromSharedPreferences();
-            adapter.notifyDataSetChanged();
+            adapter = new GroupsReminderAdapter(this, groups);
+            rvReminders.swapAdapter(adapter, false);
+            // NOTE I should collapse all views first
         }
     }
 
