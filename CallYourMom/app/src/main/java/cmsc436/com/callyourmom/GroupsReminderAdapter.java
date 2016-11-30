@@ -54,7 +54,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         for (CallReminder contact : reminder) {
             temp.add(new HashMap<String, String>());
 
-            temp.get(i).put("contactName", contact.getContactName());
+            temp.get(i).put("contactName", contact.getContactName().substring(0, contact.getContactName().length() - 3));
             temp.get(i).put("telephoneNumber", contact.getTelephoneNumber());
 
             i++;
