@@ -5,14 +5,14 @@ import java.util.Date;
 public class CallReminder {
     private String contactName;
     private String telephoneNumber;
-    private Date  nextReminder;
+    private String id;
     private int numDaysForRemind;
 
-    public CallReminder(String contactName, String telephoneNumber) {
+    public CallReminder(String contactName, String telephoneNumber, String id, int numDaysForRemind) {
         this.contactName = contactName;
         this.telephoneNumber = telephoneNumber;
-        this.nextReminder = new Date();
-        this.numDaysForRemind = 7;
+        this.id = id;
+        this.numDaysForRemind = numDaysForRemind;
     }
 
     public int getNumDaysForRemind() {
@@ -39,11 +39,11 @@ public class CallReminder {
         this.telephoneNumber = telephoneNumber;
     }
 
-    public Date getNextReminder() {
-        return nextReminder;
+    public String getId() {
+        return id;
     }
 
-    public void setNextReminder(Date nextReminder) {
-        this.nextReminder = nextReminder;
+    public void setId(String id) {
+        this.id = id;
     }
 }

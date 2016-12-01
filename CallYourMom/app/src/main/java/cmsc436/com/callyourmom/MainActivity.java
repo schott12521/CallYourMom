@@ -16,6 +16,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telecom.Call;
 import android.util.JsonReader;
 import android.util.Log;
 import android.view.View;
@@ -218,7 +219,12 @@ public class MainActivity extends AppCompatActivity {
                     List<CallReminder> group = new ArrayList<>();
                     for (int i = 0; i < contactsInGroup.length(); i++) {
                         JSONObject obj = contactsInGroup.getJSONObject(i);
-                        CallReminder reminder = new CallReminder(obj.getString("name"), obj.getString("number"));
+                        CallReminder reminder =
+                                new CallReminder(
+                                        obj.getString("name"),
+                                        obj.getString("number"),
+                                        obj.getString("id"),
+                                        Integer.parseInt(groupIdentifer));
                         group.add(reminder);
                     }
                     Log.e("" + groupIdentifer, contactsInGroup.toString());

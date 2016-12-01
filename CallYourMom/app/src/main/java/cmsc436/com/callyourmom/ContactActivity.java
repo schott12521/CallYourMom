@@ -35,6 +35,8 @@ public class ContactActivity extends AppCompatActivity {
     private SharedPreferences data;
     private SharedPreferences.Editor editor;
 
+    private String contactId;
+
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_contact);
@@ -66,8 +68,6 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 if (contactPicked) {
-                    CallReminder newReminder = new CallReminder(contactName.getText().toString(), "4");
-                    newReminder.setNumDaysForRemind(np.getValue());
                     try {
                         updateReminder(contactName.getText().toString(), contactNumber.getText().toString(), np.getValue());
                     } catch (JSONException e) {
@@ -89,9 +89,9 @@ public class ContactActivity extends AppCompatActivity {
             Uri contactData = data.getData();
             Cursor c = managedQuery(contactData, null, null, null, null);
             if (c.moveToFirst()) {
-                String id = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
+                contactId = c.getString(c.getColumnIndex(ContactsContract.Contacts._ID));
                 String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
-                contactName.setText(name + " " + id);
+                contactName.setText(name);
                 contactPicked = true;
                 //String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DATA));
 
@@ -99,7 +99,7 @@ public class ContactActivity extends AppCompatActivity {
 
                 if (hasPhone.equalsIgnoreCase("1")) {
                     Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
-                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id, null, null);
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + contactId, null, null);
                     phones.moveToFirst();
                     String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
                     contactNumber.setText(number);
@@ -137,6 +137,7 @@ public class ContactActivity extends AppCompatActivity {
         JSONObject contact = new JSONObject();
         contact.put("name", contactName);
         contact.put("number", phoneNumber);
+        contact.put("id", contactId);
         group.put(contact);
         json.put(Integer.toString(numDays), group);
         dataString = json.toString();
