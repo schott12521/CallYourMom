@@ -90,15 +90,39 @@ public class MainActivity extends AppCompatActivity {
     private void checkPermissions() {
         if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_CALL_LOG)
+                != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_CONTACTS)
                 != PackageManager.PERMISSION_GRANTED) {
+            // Both not been granted
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS}, 1);
 
+        } else if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_CALL_LOG)
+                != PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.READ_CONTACTS)
+                        == PackageManager.PERMISSION_GRANTED) {
+
+            // contacts granted, call log not granted
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.READ_CALL_LOG}, 1);
 
         } else if (ContextCompat.checkSelfPermission(getApplicationContext(),
                 Manifest.permission.READ_CALL_LOG)
+                == PackageManager.PERMISSION_GRANTED &&
+                ContextCompat.checkSelfPermission(getApplicationContext(),
+                        Manifest.permission.READ_CONTACTS)
+                        != PackageManager.PERMISSION_GRANTED) {
+
+            // call log granted, contacts not granted
+            ActivityCompat.requestPermissions(MainActivity.this,
+                    new String[]{Manifest.permission.READ_CONTACTS}, 1);
+
+        } else if (ContextCompat.checkSelfPermission(getApplicationContext(),
+                Manifest.permission.READ_CALL_LOG)
                 == PackageManager.PERMISSION_GRANTED) {
-            Log.v("Service", "started?");
             // start the service
             Intent callLogIntent = new Intent(getApplicationContext(), CallLogService.class);
             startService(callLogIntent);

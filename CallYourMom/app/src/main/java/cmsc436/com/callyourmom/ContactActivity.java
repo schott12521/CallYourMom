@@ -69,7 +69,7 @@ public class ContactActivity extends AppCompatActivity {
                     CallReminder newReminder = new CallReminder(contactName.getText().toString(), "4");
                     newReminder.setNumDaysForRemind(np.getValue());
                     try {
-                        updateReminder(contactName.getText().toString(), "410-999-5555", np.getValue());
+                        updateReminder(contactName.getText().toString(), contactNumber.getText().toString(), np.getValue());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -93,8 +93,18 @@ public class ContactActivity extends AppCompatActivity {
                 String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 contactName.setText(name + " " + id);
                 contactPicked = true;
-    //            String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                //String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.DATA));
 
+                String hasPhone = c.getString(c.getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER));
+
+                if (hasPhone.equalsIgnoreCase("1")) {
+                    Cursor phones = getContentResolver().query(ContactsContract.CommonDataKinds.Phone.CONTENT_URI, null,
+                            ContactsContract.CommonDataKinds.Phone.CONTACT_ID + " = " + id, null, null);
+                    phones.moveToFirst();
+                    String number = phones.getString(phones.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+                    contactNumber.setText(number);
+                    Log.e("Number", number);
+                }
             }
         }
     }
