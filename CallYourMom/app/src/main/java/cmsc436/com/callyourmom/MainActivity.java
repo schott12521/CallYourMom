@@ -194,11 +194,15 @@ public class MainActivity extends AppCompatActivity {
             // to call the contact
             // Intent myIntent = new Intent("cmsc436.com.callyourmom.call" + name); <- this HAS to be the name of the alarm
             Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
-            groups = populateGroupsFromSharedPreferences();
-            adapter = new GroupsReminderAdapter(this, groups);
-            rvReminders.swapAdapter(adapter, false);
+            updateRecyclerView();
             // NOTE I should collapse all views first
         }
+    }
+
+    public void updateRecyclerView() {
+        groups = populateGroupsFromSharedPreferences();
+        adapter = new GroupsReminderAdapter(this, groups);
+        rvReminders.swapAdapter(adapter, false);
     }
 
     public ArrayList<GroupsOfReminders> populateGroupsFromSharedPreferences() {

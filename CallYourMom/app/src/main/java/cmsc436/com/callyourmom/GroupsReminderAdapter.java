@@ -104,6 +104,8 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
             public void onClick(DialogInterface dialog, int id) {
                 try {
                     deleteFromSharedPreferences(reminder);
+                    MainActivity activity = (MainActivity) getContext();
+                    activity.updateRecyclerView();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -146,19 +148,16 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
                 Log.v("Delete", "Do nothing");
             }
         }
-//
-//        JSONObject contact = new JSONObject();
-//        contact.put("name", contactName);
-//        contact.put("number", phoneNumber);
-//        contact.put("id", contactId);
-//        group.put(contact);
-//        json.put(Integer.toString(numDays), group);
-//        dataString = json.toString();
+        if (group.length() != 0)
+            json.put(Integer.toString(reminder.getNumDaysForRemind()), group);
+        else
+            json.remove(Integer.toString(reminder.getNumDaysForRemind()));
+        dataString = json.toString();
 
         Log.e("Removal", dataString);
 
-//        editor.putString(reminders, dataString);
-        editor.commit();
+        editor.putString(reminders, dataString);
+        editor.apply();
     }
 
     public JSONArray removeFromJsonArray(JSONArray arr, int index) {
