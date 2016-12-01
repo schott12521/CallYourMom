@@ -1,5 +1,6 @@
 package cmsc436.com.callyourmom;
 
+import android.animation.ObjectAnimator;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
@@ -14,6 +15,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -106,6 +108,8 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
                     deleteFromSharedPreferences(reminder);
                     MainActivity activity = (MainActivity) getContext();
                     activity.updateRecyclerView();
+
+                    // TODO have to delete the alarm for the reminder
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
@@ -189,6 +193,8 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         public ListView list;
         public TextView numContacts;
         public TextView frequency;
+        public ImageView expansionArrow;
+        private int rotationAngle = 0;
 
         public ViewHolder(View itemView) {
             super(itemView);
@@ -196,6 +202,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
             list = (ListView) itemView.findViewById(R.id.list);
             numContacts = (TextView) itemView.findViewById(R.id.numContacts);
             frequency = (TextView) itemView.findViewById(R.id.groupFrequency);
+            expansionArrow = (ImageView) itemView.findViewById(R.id.expansion_icon);
 
             itemView.setOnClickListener(this);
         }
@@ -213,6 +220,8 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
                         list.getAdapter().getCount() * (int)
                                 TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 50, view.getContext().getResources().getDisplayMetrics());
                 cardView.setLayoutParams(params);
+
+                rotateArrow();
             }
             else {
                 cardView.getLayoutParams().height =
@@ -220,7 +229,17 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
                 Log.v("Collapse", cardView.getLayoutParams().height + " Should be back at 150");
                 list.setVisibility(View.GONE);
 //                TransitionManager.beginDelayedTransition(cardView);
+
+                rotateArrow();
             }
+        }
+
+        public void rotateArrow() {
+            ObjectAnimator anim = ObjectAnimator.ofFloat(expansionArrow, "rotation", rotationAngle, rotationAngle + 180);
+            anim.setDuration(300);
+            anim.start();
+            rotationAngle += 180;
+            rotationAngle = rotationAngle%360;
         }
     }
 
