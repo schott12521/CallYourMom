@@ -27,6 +27,8 @@ import org.json.JSONArray;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -119,6 +121,10 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
+            Snackbar.make(this.getCurrentFocus(), "Reminders cleared", Snackbar.LENGTH_SHORT).show();
+            groups = clearData();
+            adapter = new GroupsReminderAdapter(this, groups);
+            rvReminders.swapAdapter(adapter, false);
             return true;
         }
 
@@ -202,6 +208,25 @@ public class MainActivity extends AppCompatActivity {
             } catch (Exception e) {}
 
         }
+
+        Collections.sort(groupsToReturn, new Comparator<GroupsOfReminders>() {
+            @Override
+            public int compare(GroupsOfReminders groupsOfReminders, GroupsOfReminders t1) {
+                return groupsOfReminders.getFrequencyInDays() < t1.getFrequencyInDays() ? -1 : 1;
+            }
+        });
+
+        return groupsToReturn;
+    }
+
+    public ArrayList<GroupsOfReminders> clearData() {
+        ArrayList<GroupsOfReminders> groupsToReturn = new ArrayList<>();
+
+        // Clear the shared preferences
+        SharedPreferences preferences = getSharedPreferences("data", MODE_PRIVATE);
+        SharedPreferences.Editor editor = preferences.edit();
+        editor.clear();
+        editor.commit();
 
         return groupsToReturn;
     }

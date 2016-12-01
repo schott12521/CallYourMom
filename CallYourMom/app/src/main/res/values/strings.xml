@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Call Your Mom</string>
-    <string name="action_settings">Settings</string>
+    <string name="action_delete_all">Delete All</string>
 
     <string name="call_reminder_notification_title_template">Call reminder: %1$s</string>
 

@@ -69,7 +69,7 @@ public class ContactActivity extends AppCompatActivity {
                     CallReminder newReminder = new CallReminder(contactName.getText().toString(), "4");
                     newReminder.setNumDaysForRemind(np.getValue());
                     try {
-                        updateReminder(contactName.getText().toString(), "410-999-5555", 4);
+                        updateReminder(contactName.getText().toString(), "410-999-5555", np.getValue());
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
@@ -93,7 +93,7 @@ public class ContactActivity extends AppCompatActivity {
                 String name = c.getString(c.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                 contactName.setText(name + " " + id);
                 contactPicked = true;
-//                String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
+    //            String number = c.getString(c.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER));
 
             }
         }

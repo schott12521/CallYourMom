@@ -38,7 +38,9 @@
                 android:layout_centerHorizontal="true"
                 android:id="@+id/groupFrequency"
                 android:maxWidth="90dp"
-                android:gravity="center"/>
+                android:gravity="center"
+                android:paddingLeft="8dp"
+                android:paddingRight="8dp"/>
 
         </RelativeLayout>
 

@@ -66,7 +66,11 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         int[] to = {R.id.contact_name, R.id.contact_number};
         list.setAdapter(new SimpleAdapter(getContext(), temp, R.layout.contact_item, from, to));
 
-        holder.numContacts.setText(reminder.size() + " contact reminders");
+        if (reminder.size() == 1)
+            holder.numContacts.setText(reminder.size() + " contact reminder");
+        else
+            holder.numContacts.setText(reminder.size() + " contact reminders");
+
         holder.frequency.setText("Call every " + group.getFrequencyInDays() + " days");
 
         list.setVisibility(View.INVISIBLE);
