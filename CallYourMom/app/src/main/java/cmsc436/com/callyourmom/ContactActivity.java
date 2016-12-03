@@ -22,11 +22,15 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.util.Iterator;
+
 public class ContactActivity extends AppCompatActivity {
 
     private TextView contactName, contactNumber;
     private NumberPicker np;
     private boolean contactPicked;
+    private boolean duplicate = false;
+    private boolean override = false;
     static final int PICK_CONTACT = 1;
     public static final String reminders = "remindersFile";
 
@@ -138,6 +142,46 @@ public class ContactActivity extends AppCompatActivity {
             json.put(Integer.toString(numDays), new JSONArray());
 
         group = json.getJSONArray(Integer.toString(numDays));
+
+
+        //checking for duplicates in current group selected
+        for(int i = 0; i < group.length(); i++){
+
+            JSONObject obj = (JSONObject) group.get(i);
+
+            if(obj.get("name").equals(contactName)){
+                group.remove(i);
+                duplicate = true;
+                return;
+            }
+
+        }
+
+        //checking for duplicates in other groups
+        Iterator<String> groupsIterator = json.keys();
+        String gid = "";
+        boolean rr = false;
+        while (groupsIterator.hasNext()) {
+            String groupIdentifier = groupsIterator.next();
+
+            JSONArray temp = json.getJSONArray(groupIdentifier);
+
+            for(int i = 0; i < temp.length();i++){
+                JSONObject obj = (JSONObject) temp.get(i);
+                if(obj.get("name").equals(contactName)){
+                    temp.remove(i);
+                    if(temp.length() == 0){
+                        rr = true;
+                        gid = groupIdentifier;
+                    }
+                    override = true;
+                }
+            }
+
+        }
+        if(rr && !gid.equals("")){
+            json.remove(gid);
+        }
 
         JSONObject contact = new JSONObject();
         contact.put("name", contactName);
