@@ -82,6 +82,8 @@ public class ContactActivity extends AppCompatActivity {
                     intent.putExtra("number", contactNumber.getText().toString());
                     intent.putExtra("days", Integer.toString(np.getValue()));
                     intent.putExtra("id", contactId);
+                    intent.putExtra("duplicate", duplicate);
+                    intent.putExtra("override", override);
                     setResult(RESULT_OK, intent);
                     finish();
                 } else {
