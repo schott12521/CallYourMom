@@ -73,7 +73,12 @@ public class ContactActivity extends AppCompatActivity {
                     } catch (JSONException e) {
                         e.printStackTrace();
                     }
-                    setResult(RESULT_OK);
+                    Intent intent = new Intent();
+                    intent.putExtra("name", contactName.getText().toString());
+                    intent.putExtra("number", contactNumber.getText().toString());
+                    intent.putExtra("days", np.getValue());
+                    intent.putExtra("id", contactId);
+                    setResult(RESULT_OK, intent);
                     finish();
                 } else {
                     Snackbar.make(v, "No Contact Selected", Snackbar.LENGTH_LONG).setAction("Action", null).show();
