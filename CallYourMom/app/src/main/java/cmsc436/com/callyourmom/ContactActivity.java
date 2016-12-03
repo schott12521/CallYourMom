@@ -80,7 +80,7 @@ public class ContactActivity extends AppCompatActivity {
                     Intent intent = new Intent();
                     intent.putExtra("name", contactName.getText().toString());
                     intent.putExtra("number", contactNumber.getText().toString());
-                    intent.putExtra("days", Integer.toString(np.getValue()));
+                    intent.putExtra("days", np.getValue());
                     intent.putExtra("id", contactId);
                     setResult(RESULT_OK, intent);
                     finish();
