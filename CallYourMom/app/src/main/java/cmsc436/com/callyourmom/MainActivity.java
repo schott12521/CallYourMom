@@ -7,6 +7,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -45,6 +46,8 @@ public class MainActivity extends AppCompatActivity {
     private ArrayList<GroupsOfReminders> groups;
     private GroupsReminderAdapter adapter;
     private RecyclerView rvReminders;
+    private AlarmManager alarmManager;
+    private PendingIntent alarmIntent;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -55,7 +58,6 @@ public class MainActivity extends AppCompatActivity {
 
         // Get the permission request!
         checkPermissions();
-
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -66,7 +68,7 @@ public class MainActivity extends AppCompatActivity {
         });
 
         rvReminders = (RecyclerView) findViewById(R.id.reminders);
-
+        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
 //        ArrayList<GroupsOfReminders> groups = new ArrayList<>();
 //        ArrayList<CallReminder> reminders = new ArrayList<>();
 //        Random rand = new Random();
@@ -196,6 +198,20 @@ public class MainActivity extends AppCompatActivity {
             Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
             updateRecyclerView();
             // NOTE I should collapse all views first
+
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + data.getStringExtra("number")));
+
+            //Id for alarm should just be contact id to avoid confusion
+            //Also makes it easier to update what the contact alarm is going to be.
+
+            alarmIntent = PendingIntent.getService(MainActivity.this, Integer.parseInt(data.getStringExtra("id")), intent, 0);
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (Integer.parseInt(data.getStringExtra("days")) * 24 * 1000 * 3600), alarmIntent);
+
+
+
+
+
         }
     }
 
