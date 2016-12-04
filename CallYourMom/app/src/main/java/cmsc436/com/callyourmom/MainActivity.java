@@ -18,6 +18,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.SystemClock;
 import android.provider.ContactsContract;
+import android.support.design.widget.CoordinatorLayout;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -34,10 +35,12 @@ import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
@@ -63,9 +66,9 @@ public class MainActivity extends AppCompatActivity {
     private SharedPreferences data;
     private ArrayList<GroupsOfReminders> groups;
     private GroupsReminderAdapter adapter;
-    private RecyclerView rvReminders;
-    private AlarmManager alarmManager;
-    private PendingIntent alarmIntent;
+    public RecyclerView rvReminders;
+    public TextView emptyView;
+    private CoordinatorLayout coordinatorLayout;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,8 +88,9 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        emptyView = (TextView) findViewById(R.id.empty_text);
         rvReminders = (RecyclerView) findViewById(R.id.reminders);
-        alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+        coordinatorLayout = (CoordinatorLayout) findViewById(R.id.coordinatorlayout);
 
         groups = populateGroupsFromSharedPreferences();
         Log.e("Groups size", groups.size() + "");
@@ -205,11 +209,11 @@ public class MainActivity extends AppCompatActivity {
             Boolean override = data.getBooleanExtra("override", false);
 
             if (duplicate == true) {
-                Snackbar.make(this.getCurrentFocus(), "You already have a reminder set for that contact in this group!", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(coordinatorLayout, "You already have a reminder set for that contact in this group!", Snackbar.LENGTH_LONG).show();
             } else if (override == true) {
-                Snackbar.make(this.getCurrentFocus(), "Old reminder replaced with new reminder for contact", Snackbar.LENGTH_LONG).show();
+                Snackbar.make(coordinatorLayout, "Old reminder replaced with new reminder for contact", Snackbar.LENGTH_LONG).show();
             } else {
-                Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, "New Contact Added", Snackbar.LENGTH_SHORT).show();
             }
 
             updateRecyclerView();
@@ -226,6 +230,14 @@ public class MainActivity extends AppCompatActivity {
 
     public void updateRecyclerView() {
         groups = populateGroupsFromSharedPreferences();
+
+        if (groups.size() != 0) {
+            emptyView.setVisibility(View.GONE);
+            rvReminders.setVisibility(View.VISIBLE);
+        } else {
+            emptyView.setVisibility(View.VISIBLE);
+            rvReminders.setVisibility(View.GONE);
+        }
         adapter = new GroupsReminderAdapter(this, groups);
         rvReminders.swapAdapter(adapter, false);
     }
@@ -284,6 +296,13 @@ public class MainActivity extends AppCompatActivity {
     public ArrayList<GroupsOfReminders> clearData() {
         ArrayList<GroupsOfReminders> groupsToReturn = new ArrayList<>();
 
+        // Delete each reminder too
+        for (GroupsOfReminders group : groups) {
+            for (CallReminder reminder : group.getRemindersInGroup()) {
+                deleteReminder(reminder);
+            }
+        }
+
         // Clear the shared preferences
         SharedPreferences preferences = getSharedPreferences("data", MODE_PRIVATE);
         SharedPreferences.Editor editor = preferences.edit();
@@ -292,6 +311,28 @@ public class MainActivity extends AppCompatActivity {
 
 
         return groupsToReturn;
+    }
+
+    private void deleteReminder(CallReminder reminder) {
+        NotificationHandler notif = new NotificationHandler(this);
+
+        Intent intent = notif.getNotificationIntent(reminder.getContactName(), reminder.getTelephoneNumber(),
+                reminder.getId(),
+                reminder.getNumDaysForRemind() + "");
+
+        NotificationManager notificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+        notificationManager.cancel(Integer.parseInt(reminder.getId()));
+
+        boolean isWorking = (PendingIntent.getBroadcast(this, Integer.parseInt(reminder.getId()), intent, 0) != null);
+        if (isWorking) {
+            Log.d("alarm", "already exists, it will be killed now");
+            Log.e("Trying to delete", reminder.getId() + " " + reminder.getContactName());
+            AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
+            alarmManager.cancel(PendingIntent.getBroadcast(this, Integer.parseInt(reminder.getId()), intent, 0));
+
+
+            // We already have this alarm, push it back!
+        }
     }
 }
 

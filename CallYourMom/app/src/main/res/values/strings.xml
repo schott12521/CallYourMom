@@ -16,4 +16,5 @@
 
     <string name="action_share">Share</string>
     <string name="action_reply">Reply</string>
+    <string name="empty">You have no reminders.</string>
 </resources>

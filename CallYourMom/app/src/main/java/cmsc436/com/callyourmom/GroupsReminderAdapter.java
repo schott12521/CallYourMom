@@ -1,10 +1,14 @@
 package cmsc436.com.callyourmom;
 
 import android.animation.ObjectAnimator;
+import android.app.AlarmManager;
+import android.app.NotificationManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -41,6 +45,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import static android.R.id.input;
+import static android.content.Context.ALARM_SERVICE;
 import static cmsc436.com.callyourmom.ContactActivity.reminders;
 
 
@@ -70,7 +75,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         final GroupsOfReminders group = mGroups.get(position);
         final List<CallReminder> reminder = group.getRemindersInGroup();
         List<HashMap<String, String>> temp = new ArrayList<>();
-        List<Bitmap> temp2 = new ArrayList<>();
+
         int i = 0;
         for (CallReminder contact : reminder) {
             temp.add(new HashMap<String, String>());
@@ -78,8 +83,9 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
             temp.get(i).put("contactName", contact.getContactName());
             temp.get(i).put("telephoneNumber", contact.getTelephoneNumber());
 
-            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, Long.parseLong(contact.getId()));
-            temp.get(i).put("contactId", contactUri.toString());
+            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.getId()));
+            Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
+            temp.get(i).put("contactId", photoUri.toString());
             i++;
         }
         ListView list = holder.list;
@@ -118,10 +124,6 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         });
     }
 
-
-
-
-
     private void deleteReminderDialog(final CallReminder reminder) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false);
@@ -135,11 +137,33 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
                     MainActivity activity = (MainActivity) getContext();
                     activity.updateRecyclerView();
 
-                    // TODO have to delete the alarm for the reminder
+                    deleteReminder();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
                 Log.v("Delete", "delete this contact");
+            }
+
+            private void deleteReminder() {
+                NotificationHandler notif = new NotificationHandler(getContext());
+
+                Intent intent = notif.getNotificationIntent(reminder.getContactName(), reminder.getTelephoneNumber(),
+                        reminder.getId(),
+                        reminder.getNumDaysForRemind() + "");
+
+                NotificationManager notificationManager = (NotificationManager) getContext().getSystemService(Context.NOTIFICATION_SERVICE);
+                notificationManager.cancel(Integer.parseInt(reminder.getId()));
+
+                boolean isWorking = (PendingIntent.getBroadcast(getContext(), Integer.parseInt(reminder.getId()), intent, 0) != null);
+                if (isWorking) {
+                    Log.d("alarm", "already exists, it will be killed now");
+                    Log.e("Trying to delete", reminder.getId() + " " + reminder.getContactName());
+                    AlarmManager alarmManager = (AlarmManager) getContext().getSystemService(ALARM_SERVICE);
+                    alarmManager.cancel(PendingIntent.getBroadcast(getContext(), Integer.parseInt(reminder.getId()), intent, 0));
+
+
+                    // We already have this alarm, push it back!
+                }
             }
         });
         builder.setNegativeButton("No ", new DialogInterface.OnClickListener() {
@@ -208,6 +232,14 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
 
     @Override
     public int getItemCount() {
+        if (mGroups.size() == 0) {
+            ((MainActivity)getContext()).emptyView.setVisibility(View.VISIBLE);
+            ((MainActivity)getContext()).rvReminders.setVisibility(View.GONE);
+        }
+        else {
+            ((MainActivity)getContext()).emptyView.setVisibility(View.GONE);
+            ((MainActivity)getContext()).rvReminders.setVisibility(View.VISIBLE);
+        }
         return mGroups.size();
     }
 
