@@ -69,21 +69,29 @@ public class CallLogService extends Service {
 
             // See if there is already a pending alarm intent for this reminder
 
-            Intent myIntent = new Intent("cmsc436.com.callyourmom.call" + name);
+            Intent intent = new Intent(Intent.ACTION_DIAL);
+            intent.setData(Uri.parse("tel:" + num));
+
             AlarmManager alarmManager = (AlarmManager) getSystemService(ALARM_SERVICE);
 
-            boolean isWorking = (PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_NO_CREATE) != null);
+            boolean isWorking = (PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_NO_CREATE) != null);
             if (isWorking) {
                 Log.d("alarm", "already exists");
 
+                alarmManager.cancel(PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_NO_CREATE));
+
+                // Start new alarm
+
+                // TODO NEW alarm (copied alarm from MainActivity, check flags if not working
+
                 // We already have this alarm, push it back!
             } else {
-                Log.d("alarm", "is not working");
+                Log.d("alarm", "does not exist");
                 // We don't have this alarm do no work
             }
 
             if(!isWorking) {
-                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, myIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+                PendingIntent pendingIntent = PendingIntent.getBroadcast(getApplicationContext(), 0, intent, PendingIntent.FLAG_UPDATE_CURRENT);
                 // System.currentTimeMillis will have to change to be equal to when the intent should fire
                 // which is the reminder.numDaysForReminder * 24 * 60 * 60 sec
                 alarmManager.set(AlarmManager.RTC, System.currentTimeMillis(), pendingIntent);
