@@ -3,6 +3,9 @@ package cmsc436.com.callyourmom;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.app.Notification;
+import android.app.NotificationManager;
+import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
@@ -17,6 +20,7 @@ import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.NotificationCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
@@ -222,18 +226,27 @@ public class MainActivity extends AppCompatActivity {
             updateRecyclerView();
             // NOTE I should collapse all views first
 
+            //Intent to bring up phone call
             Intent intent = new Intent(Intent.ACTION_DIAL);
             intent.setData(Uri.parse("tel:" + data.getStringExtra("number")));
+            PendingIntent pintent = PendingIntent.getActivity(this, 0, intent, 0);
 
-            //Id for alarm should just be contact id to avoid confusion
-            //Also makes it easier to update what the contact alarm is going to be.
+            //Building notification
+            Notification notification = new Notification.Builder(this)
+                    .setContentTitle("Reminder to call " + data.getStringExtra("name"))
+                    .setContentText("It's been a while")
+                    .addAction(0, "Call", pintent).build();
 
-            alarmIntent = PendingIntent.getService(MainActivity.this, Integer.parseInt(data.getStringExtra("id")), intent, 0);
-            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (Integer.parseInt(data.getStringExtra("days")) * 24 * 1000 * 3600), alarmIntent);
+            Intent notificationIntent = new Intent(this, ReminderNotification.class);
+            notificationIntent.putExtra("notification-id", 1);
+            notificationIntent.putExtra("notification", notification);
+            PendingIntent pNotificationIntent = PendingIntent.getBroadcast(this, Integer.parseInt(data.getStringExtra("id")), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
+            //Adding notification to alarm
+            //alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (Integer.parseInt(data.getStringExtra("days")) * 24 * 1000 * 3600), pNotificationIntent);
 
-
-
+            //Testing with 5 second notification
+            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000 * 5, pNotificationIntent);
 
         }
     }
@@ -305,5 +318,6 @@ public class MainActivity extends AppCompatActivity {
 
         return groupsToReturn;
     }
-
 }
+
+
