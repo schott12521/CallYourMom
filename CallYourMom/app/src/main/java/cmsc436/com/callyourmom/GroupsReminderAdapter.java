@@ -1,9 +1,16 @@
 package cmsc436.com.callyourmom;
 
 import android.animation.ObjectAnimator;
+import android.content.ContentResolver;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.net.Uri;
+import android.provider.ContactsContract;
 import android.support.transition.TransitionManager;
 import android.support.v4.app.ActivityOptionsCompat;
 import android.support.v7.app.AlertDialog;
@@ -26,10 +33,14 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import static android.R.id.input;
 import static cmsc436.com.callyourmom.ContactActivity.reminders;
 
 
@@ -59,7 +70,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         final GroupsOfReminders group = mGroups.get(position);
         final List<CallReminder> reminder = group.getRemindersInGroup();
         List<HashMap<String, String>> temp = new ArrayList<>();
-
+        List<Bitmap> temp2 = new ArrayList<>();
         int i = 0;
         for (CallReminder contact : reminder) {
             temp.add(new HashMap<String, String>());
@@ -69,9 +80,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
 
             i++;
         }
-
         ListView list = holder.list;
-
         String[] from = {"contactName", "telephoneNumber"};
         int[] to = {R.id.contact_name, R.id.contact_number};
         list.setAdapter(new SimpleAdapter(getContext(), temp, R.layout.contact_item, from, to));
@@ -81,9 +90,36 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         else
             holder.numContacts.setText(reminder.size() + " contact reminders");
 
+
+
+
+        ContentResolver contentResolver;
+        int j = 0;
+        for(CallReminder contact : reminder) {
+
+            contentResolver = getContext().getContentResolver();
+            Bitmap bitmap = loadContactPhoto(contentResolver, (long)Integer.parseInt(contact.getId()));
+            temp2.add(bitmap);
+
+            j++;
+        }
+
+        for(int x = 0; x < temp2.size(); x++){
+            ImageView n = (ImageView) list.findViewById(R.id.contact_photo);
+            if(n != null) {
+                n.setImageBitmap(temp2.get(x));
+            }
+        }
+
+
+
+
+
         holder.frequency.setText("Call every " + group.getFrequencyInDays() + " days");
 
         list.setVisibility(View.INVISIBLE);
+
+
 
         // This is the on item click listener for contacts in the group
         holder.list.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -96,6 +132,22 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         });
     }
 
+
+
+
+    public static Bitmap loadContactPhoto(ContentResolver cr, long id){
+        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
+        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
+        if (input == null){
+            return null;
+        }
+        try {
+            return BitmapFactory.decodeStream(input);
+        }
+        catch(Exception e){
+            return null;
+        }
+    }
     private void deleteReminderDialog(final CallReminder reminder) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false);
@@ -194,6 +246,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
         public TextView numContacts;
         public TextView frequency;
         public ImageView expansionArrow;
+
         private int rotationAngle = 0;
 
         public ViewHolder(View itemView) {
@@ -203,6 +256,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
             numContacts = (TextView) itemView.findViewById(R.id.numContacts);
             frequency = (TextView) itemView.findViewById(R.id.groupFrequency);
             expansionArrow = (ImageView) itemView.findViewById(R.id.expansion_icon);
+
 
             itemView.setOnClickListener(this);
         }

@@ -3,12 +3,17 @@ package cmsc436.com.callyourmom;
 import android.Manifest;
 import android.app.AlarmManager;
 import android.app.PendingIntent;
+import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
@@ -23,11 +28,15 @@ import android.util.Log;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONObject;
 
+import java.io.BufferedInputStream;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -37,6 +46,7 @@ import java.util.Map;
 import java.util.Random;
 
 import static cmsc436.com.callyourmom.ContactActivity.reminders;
+import static java.security.AccessController.getContext;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -259,6 +269,8 @@ public class MainActivity extends AppCompatActivity {
                                         obj.getString("id"),
                                         Integer.parseInt(groupIdentifer));
                         group.add(reminder);
+
+
                     }
                     Log.e("" + groupIdentifer, contactsInGroup.toString());
 
@@ -293,4 +305,5 @@ public class MainActivity extends AppCompatActivity {
 
         return groupsToReturn;
     }
+
 }
