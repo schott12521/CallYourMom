@@ -33,6 +33,7 @@
             android:enabled="true"
             android:exported="true">
         </service>
+        <reciever android:name=".ReminderNotification"/>
     </application>
 
 </manifest>

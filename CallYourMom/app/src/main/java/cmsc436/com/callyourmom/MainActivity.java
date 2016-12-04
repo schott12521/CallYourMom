@@ -251,6 +251,10 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
+    public void createNotification(String name, String number, String id, String days){
+
+    }
+
     public void updateRecyclerView() {
         groups = populateGroupsFromSharedPreferences();
         adapter = new GroupsReminderAdapter(this, groups);
@@ -315,6 +319,7 @@ public class MainActivity extends AppCompatActivity {
         SharedPreferences.Editor editor = preferences.edit();
         editor.clear();
         editor.commit();
+
 
         return groupsToReturn;
     }
