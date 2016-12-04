@@ -78,11 +78,13 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
             temp.get(i).put("contactName", contact.getContactName());
             temp.get(i).put("telephoneNumber", contact.getTelephoneNumber());
 
+            Uri contactUri = ContentUris.withAppendedId(ContactsContract.Data.CONTENT_URI, Long.parseLong(contact.getId()));
+            temp.get(i).put("contactId", contactUri.toString());
             i++;
         }
         ListView list = holder.list;
-        String[] from = {"contactName", "telephoneNumber"};
-        int[] to = {R.id.contact_name, R.id.contact_number};
+        String[] from = {"contactName", "telephoneNumber", "contactId"};
+        int[] to = {R.id.contact_name, R.id.contact_number, R.id.contact_photo};
         list.setAdapter(new SimpleAdapter(getContext(), temp, R.layout.contact_item, from, to));
 
         if (reminder.size() == 1)
@@ -93,23 +95,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
 
 
 
-        ContentResolver contentResolver;
-        int j = 0;
-        for(CallReminder contact : reminder) {
 
-            contentResolver = getContext().getContentResolver();
-            Bitmap bitmap = loadContactPhoto(contentResolver, (long)Integer.parseInt(contact.getId()));
-            temp2.add(bitmap);
-
-            j++;
-        }
-
-        for(int x = 0; x < temp2.size(); x++){
-            ImageView n = (ImageView) list.findViewById(R.id.contact_photo);
-            if(n != null) {
-                n.setImageBitmap(temp2.get(x));
-            }
-        }
 
 
 
@@ -135,19 +121,7 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
 
 
 
-    public static Bitmap loadContactPhoto(ContentResolver cr, long id){
-        Uri uri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, id);
-        InputStream input = ContactsContract.Contacts.openContactPhotoInputStream(cr, uri);
-        if (input == null){
-            return null;
-        }
-        try {
-            return BitmapFactory.decodeStream(input);
-        }
-        catch(Exception e){
-            return null;
-        }
-    }
+
     private void deleteReminderDialog(final CallReminder reminder) {
         AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
         builder.setCancelable(false);
