@@ -49,6 +49,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
+
 import static cmsc436.com.callyourmom.ContactActivity.reminders;
 import static java.security.AccessController.getContext;
 
@@ -233,6 +234,7 @@ public class MainActivity extends AppCompatActivity {
 
             //Building notification
             Notification notification = new Notification.Builder(this)
+                    .setSmallIcon(R.drawable.ic_stat_call_reminder)
                     .setContentTitle("Reminder to call " + data.getStringExtra("name"))
                     .setContentText("It's been a while")
                     .addAction(0, "Call", pintent).build();
@@ -240,11 +242,12 @@ public class MainActivity extends AppCompatActivity {
             Intent notificationIntent = new Intent(this, ReminderNotification.class);
             notificationIntent.putExtra("notification-id", 1);
             notificationIntent.putExtra("notification", notification);
-            PendingIntent pNotificationIntent = PendingIntent.getBroadcast(this, Integer.parseInt(data.getStringExtra("id")), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+            PendingIntent pNotificationIntent = PendingIntent.getBroadcast(this, Integer.parseInt(data.getStringExtra("id")), notificationIntent, PendingIntent.FLAG_ONE_SHOT);
 
             //Adding notification to alarm
             //alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (Integer.parseInt(data.getStringExtra("days")) * 24 * 1000 * 3600), pNotificationIntent);
-
+            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
+            nm.notify(0, notification);
             //Testing with 5 second notification
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000 * 5, pNotificationIntent);
 

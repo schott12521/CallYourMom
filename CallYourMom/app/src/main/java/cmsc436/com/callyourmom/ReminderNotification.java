@@ -12,8 +12,8 @@ import android.app.NotificationManager;
 
 public class ReminderNotification extends BroadcastReceiver {
 
-    final String NOTIFICATION = "notification";
-    final String NOTIFICATION_ID = "notification-id";
+    private static String NOTIFICATION = "notification";
+    private static String NOTIFICATION_ID = "notification-id";
 
     public void onReceive(Context context, Intent intent){
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
