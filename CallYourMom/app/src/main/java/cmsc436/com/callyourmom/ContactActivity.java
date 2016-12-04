@@ -152,7 +152,7 @@ public class ContactActivity extends AppCompatActivity {
             JSONObject obj = (JSONObject) group.get(i);
 
             if(obj.get("name").equals(contactName)){
-                group.remove(i);
+                removeFromJsonArray(group, i);
                 duplicate = true;
                 return;
             }
@@ -171,7 +171,7 @@ public class ContactActivity extends AppCompatActivity {
             for(int i = 0; i < temp.length();i++){
                 JSONObject obj = (JSONObject) temp.get(i);
                 if(obj.get("name").equals(contactName)){
-                    temp.remove(i);
+                    removeFromJsonArray(temp, i);
                     if(temp.length() == 0){
                         rr = true;
                         gid = groupIdentifier;
@@ -211,5 +211,20 @@ public class ContactActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    public JSONArray removeFromJsonArray(JSONArray arr, int index) {
+        JSONArray output = new JSONArray();
+        int len = arr.length();
+        for (int i = 0; i < len; i++)   {
+            if (i != index) {
+                try {
+                    output.put(arr.get(i));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return output;
+        //return this; If you need the input array in case of a failed attempt to remove an item.
+    }
 
 }

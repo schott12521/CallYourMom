@@ -28,12 +28,20 @@
             android:theme="@style/AppTheme.NoActionBar">
         </activity>
 
+        <receiver
+            android:name=".ReminderNotification"
+            android:enabled="true"
+            android:exported="true">
+        </receiver>
+
         <service
             android:name=".CallLogService"
             android:enabled="true"
             android:exported="true">
         </service>
-        <reciever android:name=".ReminderNotification"/>
+
+        <activity android:name=".CallActivity">
+        </activity>
     </application>
 
 </manifest>

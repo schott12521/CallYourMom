@@ -16,6 +16,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.SystemClock;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -50,6 +51,8 @@ import java.util.Map;
 import java.util.Random;
 
 
+import static android.support.v4.app.NotificationCompat.PRIORITY_HIGH;
+import static android.support.v4.app.NotificationCompat.VISIBILITY_PUBLIC;
 import static cmsc436.com.callyourmom.ContactActivity.reminders;
 import static java.security.AccessController.getContext;
 
@@ -84,19 +87,6 @@ public class MainActivity extends AppCompatActivity {
 
         rvReminders = (RecyclerView) findViewById(R.id.reminders);
         alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
-//        ArrayList<GroupsOfReminders> groups = new ArrayList<>();
-//        ArrayList<CallReminder> reminders = new ArrayList<>();
-//        Random rand = new Random();
-//
-//        for (int i = 0; i < rand.nextInt(5) + 1; i++) {
-//            reminders.add(new CallReminder("hello " + i, i + ""));
-//        }
-//
-//        for (int i = 0; i < rand.nextInt(5) + 3; i++) {
-//            GroupsOfReminders singleGroup = new GroupsOfReminders(reminders);
-//            singleGroup.setFrequencyInDays(rand.nextInt(21) + 1);
-//            groups.add(singleGroup);
-//        }
 
         groups = populateGroupsFromSharedPreferences();
         Log.e("Groups size", groups.size() + "");
@@ -224,40 +214,14 @@ public class MainActivity extends AppCompatActivity {
 
             updateRecyclerView();
             // NOTE I should collapse all views first
+            String number = data.getStringExtra("number");
+            String name = data.getStringExtra("name");
+            String id = data.getStringExtra("id");
+            String days = data.getStringExtra("days");
 
-            //Intent to bring up phone call
-            Intent intent = new Intent(Intent.ACTION_DIAL);
-            intent.setData(Uri.parse("tel:" + data.getStringExtra("number")));
-            PendingIntent pintent = PendingIntent.getActivity(this, 0, intent, 0);
-
-            //TODO make pending intents for actions reset the alarm (after user clicks call or dismiss, it will reset alarm either way)
-            //Building notification
-            Notification notification = new Notification.Builder(this)
-                    .setSmallIcon(R.drawable.ic_stat_call_reminder)
-                    .setContentTitle("Reminder to call " + data.getStringExtra("name"))
-                    .setContentText("It's been a while")
-                    .setOngoing(true)
-                    .addAction(0, "Call", pintent)
-                    .addAction(0, "Dismiss", null).build();
-
-
-            //TODO make alarms show up
-            Intent notificationIntent = new Intent(this, ReminderNotification.class);
-            notificationIntent.putExtra("notification-id", 1);
-            notificationIntent.putExtra("notification", notification);
-            PendingIntent pNotificationIntent = PendingIntent.getBroadcast(this, Integer.parseInt(data.getStringExtra("id")), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-            //Adding notification to alarm
-            //alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (Integer.parseInt(data.getStringExtra("days")) * 24 * 1000 * 3600), pNotificationIntent);
-
-            //Testing with 5 second notification
-            alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000 * 5, pNotificationIntent);
-
+            NotificationHandler notif = new NotificationHandler(this);
+            notif.createNotification(name, number, id, days);
         }
-    }
-
-    public void createNotification(String name, String number, String id, String days) {
-
     }
 
     public void updateRecyclerView() {
