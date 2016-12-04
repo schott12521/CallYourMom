@@ -27,6 +27,7 @@ public class ReminderNotification extends BroadcastReceiver {
 
         NotificationManager notificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
         Notification notification = intent.getParcelableExtra(NOTIFICATION);
+        notification.defaults |= Notification.DEFAULT_SOUND;
 
         int id = Integer.parseInt(intent.getStringExtra(NOTIFICATION_ID));
 

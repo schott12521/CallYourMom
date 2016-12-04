@@ -39,6 +39,8 @@ import org.w3c.dom.Text;
 
 import java.io.BufferedInputStream;
 import java.io.ByteArrayInputStream;
+import java.io.File;
+import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -85,7 +87,14 @@ public class GroupsReminderAdapter extends RecyclerView.Adapter<GroupsReminderAd
 
             Uri contactUri = ContentUris.withAppendedId(ContactsContract.Contacts.CONTENT_URI, Long.parseLong(contact.getId()));
             Uri photoUri = Uri.withAppendedPath(contactUri, ContactsContract.Contacts.Photo.CONTENT_DIRECTORY);
-            temp.get(i).put("contactId", photoUri.toString());
+
+            try {
+                getContext().getContentResolver().openAssetFileDescriptor(photoUri, "r");
+                temp.get(i).put("contactId", photoUri.toString());
+            } catch (FileNotFoundException e) {
+                temp.get(i).put("contactId", Integer.toString(R.drawable.circle_for_contact_photo));
+            }
+
             i++;
         }
         ListView list = holder.list;
