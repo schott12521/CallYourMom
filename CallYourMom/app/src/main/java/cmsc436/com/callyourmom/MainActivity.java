@@ -110,8 +110,8 @@ public class MainActivity extends AppCompatActivity {
                 Manifest.permission.READ_CALL_LOG)
                 != PackageManager.PERMISSION_GRANTED &&
                 ContextCompat.checkSelfPermission(getApplicationContext(),
-                Manifest.permission.READ_CONTACTS)
-                != PackageManager.PERMISSION_GRANTED) {
+                        Manifest.permission.READ_CONTACTS)
+                        != PackageManager.PERMISSION_GRANTED) {
             // Both not been granted
             ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.READ_CALL_LOG, Manifest.permission.READ_CONTACTS}, 1);
@@ -214,13 +214,11 @@ public class MainActivity extends AppCompatActivity {
             Boolean duplicate = data.getBooleanExtra("duplicate", false);
             Boolean override = data.getBooleanExtra("override", false);
 
-            if(duplicate == true) {
+            if (duplicate == true) {
                 Snackbar.make(this.getCurrentFocus(), "You already have a reminder set for that contact in this group!", Snackbar.LENGTH_LONG).show();
-            }
-            else if(override == true){
+            } else if (override == true) {
                 Snackbar.make(this.getCurrentFocus(), "Old reminder replaced with new reminder for contact", Snackbar.LENGTH_LONG).show();
-            }
-            else{
+            } else {
                 Snackbar.make(this.getCurrentFocus(), "New Contact Added", Snackbar.LENGTH_SHORT).show();
             }
 
@@ -232,29 +230,33 @@ public class MainActivity extends AppCompatActivity {
             intent.setData(Uri.parse("tel:" + data.getStringExtra("number")));
             PendingIntent pintent = PendingIntent.getActivity(this, 0, intent, 0);
 
+            //TODO make pending intents for actions reset the alarm (after user clicks call or dismiss, it will reset alarm either way)
             //Building notification
             Notification notification = new Notification.Builder(this)
                     .setSmallIcon(R.drawable.ic_stat_call_reminder)
                     .setContentTitle("Reminder to call " + data.getStringExtra("name"))
                     .setContentText("It's been a while")
-                    .addAction(0, "Call", pintent).build();
+                    .setOngoing(true)
+                    .addAction(0, "Call", pintent)
+                    .addAction(0, "Dismiss", null).build();
 
+
+            //TODO make alarms show up
             Intent notificationIntent = new Intent(this, ReminderNotification.class);
             notificationIntent.putExtra("notification-id", 1);
             notificationIntent.putExtra("notification", notification);
-            PendingIntent pNotificationIntent = PendingIntent.getBroadcast(this, Integer.parseInt(data.getStringExtra("id")), notificationIntent, PendingIntent.FLAG_ONE_SHOT);
+            PendingIntent pNotificationIntent = PendingIntent.getBroadcast(this, Integer.parseInt(data.getStringExtra("id")), notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
             //Adding notification to alarm
             //alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (Integer.parseInt(data.getStringExtra("days")) * 24 * 1000 * 3600), pNotificationIntent);
-            NotificationManager nm = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
-            nm.notify(0, notification);
+
             //Testing with 5 second notification
             alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + 1000 * 5, pNotificationIntent);
 
         }
     }
 
-    public void createNotification(String name, String number, String id, String days){
+    public void createNotification(String name, String number, String id, String days) {
 
     }
 
@@ -300,7 +302,8 @@ public class MainActivity extends AppCompatActivity {
                 }
 
 
-            } catch (Exception e) {}
+            } catch (Exception e) {
+            }
 
         }
 
