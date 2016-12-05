@@ -159,7 +159,7 @@ public class MainActivity extends AppCompatActivity {
         if (id == R.id.action_settings) {
 
             if(groups != null && groups.size() != 0) {
-                Snackbar.make(this.getCurrentFocus(), "Reminders cleared", Snackbar.LENGTH_SHORT).show();
+                Snackbar.make(coordinatorLayout, "Reminders cleared", Snackbar.LENGTH_SHORT).show();
                 groups = clearData();
                 adapter = new GroupsReminderAdapter(this, groups);
                 rvReminders.swapAdapter(adapter, false);
@@ -183,7 +183,7 @@ public class MainActivity extends AppCompatActivity {
                         && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
 
                     // permission was granted, yay! Do the
-                    // contacts-related task you need to do.
+                    // contacts-related0 task you need to do.
                     Intent callLogIntent = new Intent(getApplicationContext(), CallLogService.class);
                     startService(callLogIntent);
                 } else {
