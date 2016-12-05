@@ -22,14 +22,14 @@ public class NotificationHandler {
         PendingIntent pNotificationIntent =
                 PendingIntent.getBroadcast(context, Integer.parseInt(id), getNotificationIntent(name, number, id, days), 0);
 
-        //Adding notification to alarm
-        //alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (Integer.parseInt(days)) * 24 * 1000 * 3600), pNotificationIntent);
+
 
         //Testing with 5 second notification
         AlarmManager alarmManager = (AlarmManager) context.getSystemService(ALARM_SERVICE);
-        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
-                20 * 1000, pNotificationIntent);
-
+        //alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() +
+        //        20 * 1000, pNotificationIntent);
+        //Adding notification to alarm
+        alarmManager.set(AlarmManager.RTC_WAKEUP, System.currentTimeMillis() + (Integer.parseInt(days)) * 24 * 1000 * 3600, pNotificationIntent);
     }
 
     public Intent getNotificationIntent(String name, String number, String id, String days) {
