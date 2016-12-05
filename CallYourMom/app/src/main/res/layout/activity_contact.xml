@@ -49,11 +49,11 @@
             android:id="@+id/numberPicker"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-<<<<<<< HEAD
+
             android:layout_centerHorizontal="true"
-=======
+
             android:layout_marginLeft="100dp"
->>>>>>> origin/master
+
             android:layout_centerVertical="true"/>
 
         <TextView

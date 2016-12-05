@@ -157,11 +157,15 @@ public class MainActivity extends AppCompatActivity {
 
         //noinspection SimplifiableIfStatement
         if (id == R.id.action_settings) {
-            Snackbar.make(this.getCurrentFocus(), "Reminders cleared", Snackbar.LENGTH_SHORT).show();
-            groups = clearData();
-            adapter = new GroupsReminderAdapter(this, groups);
-            rvReminders.swapAdapter(adapter, false);
-            return true;
+
+            if(groups != null && groups.size() != 0) {
+                Snackbar.make(this.getCurrentFocus(), "Reminders cleared", Snackbar.LENGTH_SHORT).show();
+                groups = clearData();
+                adapter = new GroupsReminderAdapter(this, groups);
+                rvReminders.swapAdapter(adapter, false);
+                return true;
+            }
+
         }
 
         return super.onOptionsItemSelected(item);
