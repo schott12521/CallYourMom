@@ -165,9 +165,7 @@ public class MainActivity extends AppCompatActivity {
                 rvReminders.swapAdapter(adapter, false);
                 return true;
             }
-            else{
-                Snackbar.make(this.getCurrentFocus(), "You have no reminders to clear", Snackbar.LENGTH_SHORT).show();
-            }
+            
 
         }
 
