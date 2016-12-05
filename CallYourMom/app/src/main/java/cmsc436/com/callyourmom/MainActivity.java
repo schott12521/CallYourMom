@@ -39,6 +39,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.Text;
 
@@ -213,9 +214,27 @@ public class MainActivity extends AppCompatActivity {
             Boolean duplicate = data.getBooleanExtra("duplicate", false);
             Boolean override = data.getBooleanExtra("override", false);
 
+            String number = data.getStringExtra("number");
+            String name = data.getStringExtra("name");
+            String id = data.getStringExtra("id");
+            String days = data.getStringExtra("days");
+
+            CallReminder reminder = new CallReminder(name, number, id, Integer.parseInt(days));
+
             if (duplicate == true) {
                 Snackbar.make(coordinatorLayout, "You already have a reminder set for that contact in this group!", Snackbar.LENGTH_LONG).show();
             } else if (override == true) {
+                for (GroupsOfReminders group : groups) {
+                    for (CallReminder ele : group.getRemindersInGroup()) {
+                        if (ele.getId().equals(reminder.getId())) {
+                            deleteReminder(ele);
+                            try {
+                                deleteFromSharedPreferences(ele);
+                            } catch (Exception e) {}
+                        }
+                    }
+                }
+
                 Snackbar.make(coordinatorLayout, "Old reminder replaced with new reminder for contact", Snackbar.LENGTH_LONG).show();
             } else {
                 Snackbar.make(coordinatorLayout, "New Contact Added", Snackbar.LENGTH_SHORT).show();
@@ -223,10 +242,7 @@ public class MainActivity extends AppCompatActivity {
 
             updateRecyclerView();
             // NOTE I should collapse all views first
-            String number = data.getStringExtra("number");
-            String name = data.getStringExtra("name");
-            String id = data.getStringExtra("id");
-            String days = data.getStringExtra("days");
+
 
             NotificationHandler notif = new NotificationHandler(this);
             notif.createNotification(name, number, id, days);
@@ -338,6 +354,59 @@ public class MainActivity extends AppCompatActivity {
 
             // We already have this alarm, push it back!
         }
+    }
+
+    public void deleteFromSharedPreferences(CallReminder reminder) throws JSONException {
+        SharedPreferences data = getSharedPreferences("data", Context.MODE_PRIVATE);
+        SharedPreferences.Editor editor = data.edit();
+        String dataString = data.getString(reminders, "");
+
+        JSONObject json;
+        JSONArray group;
+        if (dataString != null && !dataString.equals("") && !dataString.isEmpty())
+            json = new JSONObject(dataString);
+        else
+            json = new JSONObject();
+
+        group = json.getJSONArray(Integer.toString(reminder.getNumDaysForRemind()));
+
+        for (int i = 0; i < group.length(); i++) {
+            JSONObject obj = (JSONObject) group.get(i);
+            if (obj.getString("name").equals(reminder.getContactName()) &&
+                    obj.getString("number").equals(reminder.getTelephoneNumber()) &&
+                    obj.getString("id").equals(reminder.getId() + "")) {
+                group = removeFromJsonArray(group, i);
+                Log.v("Delete", "I think we did it");
+            } else {
+                Log.v("Delete", "Do nothing");
+            }
+        }
+        if (group.length() != 0)
+            json.put(Integer.toString(reminder.getNumDaysForRemind()), group);
+        else
+            json.remove(Integer.toString(reminder.getNumDaysForRemind()));
+        dataString = json.toString();
+
+        Log.e("Removal", dataString);
+
+        editor.putString(reminders, dataString);
+        editor.apply();
+    }
+
+    public JSONArray removeFromJsonArray(JSONArray arr, int index) {
+        JSONArray output = new JSONArray();
+        int len = arr.length();
+        for (int i = 0; i < len; i++)   {
+            if (i != index) {
+                try {
+                    output.put(arr.get(i));
+                } catch (JSONException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+        return output;
+        //return this; If you need the input array in case of a failed attempt to remove an item.
     }
 }
 

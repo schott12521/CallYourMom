@@ -84,6 +84,7 @@ public class ContactActivity extends AppCompatActivity {
                     intent.putExtra("id", contactId);
                     intent.putExtra("duplicate", duplicate);
                     intent.putExtra("override", override);
+
                     setResult(RESULT_OK, intent);
                     finish();
                 } else {
@@ -170,8 +171,9 @@ public class ContactActivity extends AppCompatActivity {
 
             for(int i = 0; i < temp.length();i++){
                 JSONObject obj = (JSONObject) temp.get(i);
-                if(obj.get("name").equals(contactName)){
-                    removeFromJsonArray(temp, i);
+                if(obj.get("name").equals(contactName) && i != numDays){
+                    //deleteFromSharedPreferences(numDays + "", contactId);
+                    //removeFromJsonArray(temp, i);
                     if(temp.length() == 0){
                         rr = true;
                         gid = groupIdentifier;
@@ -226,5 +228,4 @@ public class ContactActivity extends AppCompatActivity {
         return output;
         //return this; If you need the input array in case of a failed attempt to remove an item.
     }
-
 }
